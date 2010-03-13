@@ -1,4 +1,4 @@
-# DRecord
+# DRecord.framework
 
 Dumb Record (DRecord) is a very simplistic ORM for Objective-C and Cocoa project. It is built on top of sqlite.
 
@@ -13,9 +13,13 @@ Dumb Record (DRecord) is a very simplistic ORM for Objective-C and Cocoa project
 
 Models must inherit the JPModel class, the attributes must correspond to the columns of the table.
 
-The name of the class will be pluralize (as of this writting, it's adding an `s` to the lower cased class name.
+The name of the class will be pluralized (it's adding an `s` to the lower cased class name).
 
-You should also use Objective-C 2.0 period notation for those attributes.
+For the following SQL
+
+    CREATE TABLE tracks (track_id INTEGER PRIMARY KEY, name VARCHAR(255), duration INTEGER);
+
+You should use the following class declaration
 
     #import <Cocoa/Cocoa.h>
     #import "DRecord/DRecord.h"
@@ -42,11 +46,13 @@ To insert a new object in the database
     track.duration = [NSNumber numberWithInt: 156];
     [track insert];
 
-    // To update the value of that object
+To update the value of that object
+
     track.duration = [NSNumber numberWithInt: 136];
     [track update];
 
-    // To remove that object from the database
+To remove that object from the database
+
     [track delete];
 
 After that you can find objects in a sqlite database as follows:
@@ -55,8 +61,17 @@ After that you can find objects in a sqlite database as follows:
 
     NSArray *tracks = [Track findWhere: [NSDictionary dictionaryWithObjectsAndKeys: @"Song title", @"name", nil] inDB: db];
 
-    #import "DRecord
+The where dictionary is column name for the key and the value to match the search for. It does `AND` on all entries.
 
-A the primary key has to be the name of the class (lower case) followed by _id.
+## Notes:
+
+The primary key has to be the name of the class (lower case) followed by _id.
+
+For now you would need to create code to create the tables and maintain the schema up-to-date.
+
+
+## TODO
+
+Add more options to search for objects (bringing support for `OR` and `LIMIT`)
 
 
