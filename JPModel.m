@@ -3,28 +3,13 @@
 //  JPData
 //
 //  Created by Jerome Poichet on 3/12/10.
-//  Copyright 2010 OnLive, Inc.. All rights reserved.
+//  Copyright 2010 Jerome Poichet. All rights reserved.
 //
 
 #import "JPModel.h"
 #import "JPLite.h"
 #include <objc/runtime.h> //objc runtime api’s
-
-@interface NSString (Plural)
-
-- (NSString *) plural;
-
-@end
-
-@implementation NSString (Plural)
-
-- (NSString *) plural
-{
-    return [self stringByAppendingString: @"s"];
-}
-
-@end
-
+#import "NSStringAdditions.h"
 
 @interface JPModel (Private)
 

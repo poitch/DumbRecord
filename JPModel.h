@@ -3,7 +3,7 @@
 //  JPData
 //
 //  Created by Jerome Poichet on 3/12/10.
-//  Copyright 2010 OnLive, Inc.. All rights reserved.
+//  Copyright 2010 Jerome Poichet. All rights reserved.
 //
 
 #if TARGET_OS_IPHONE
