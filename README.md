@@ -1,6 +1,6 @@
-# DRecord.framework
+# DumbRecord.framework
 
-Dumb Record (DRecord) is a very simplistic ORM for Objective-C and Cocoa project. It is built on top of sqlite.
+Dumb Record is a very simplistic ORM for Objective-C and Cocoa project. It is built on top of sqlite.
 
 ## Installation
 
@@ -11,7 +11,7 @@ Dumb Record (DRecord) is a very simplistic ORM for Objective-C and Cocoa project
 
 ## Utilisation
 
-Models must inherit the JPModel class, the attributes must correspond to the columns of the table.
+Models must inherit the DRModel class, the attributes must correspond to the columns of the table.
 
 The name of the class will be pluralized (it's adding an `s` to the lower cased class name).
 
@@ -22,9 +22,9 @@ For the following SQL
 You should use the following class declaration
 
     #import <Cocoa/Cocoa.h>
-    #import "DRecord/DRecord.h"
+    #import "DumbRecord/DumbRecord.h"
 
-    @interface Track : JPModel {
+    @interface Track : DRModel {
         NSNumber *track_id;
         NSString *name;
         NSNumber *duration;
@@ -39,25 +39,25 @@ You should use the following class declaration
 
 To insert a new object in the database
 
-    JPLite *db = [JPLite liteWithDatabase: @"tracks.sql"];
+    DRLite *db = [DRLite liteWithDatabase: @"tracks.sql"];
 
     Track *track = [[Track alloc] init];
     track.name = @"Song title";
     track.duration = [NSNumber numberWithInt: 156];
-    [track insert];
+    [track insert: db];
 
 To update the value of that object
 
     track.duration = [NSNumber numberWithInt: 136];
-    [track update];
+    [track update: db];
 
 To remove that object from the database
 
-    [track delete];
+    [track delete: db];
 
 After that you can find objects in a sqlite database as follows:
 
-    JPLite *db = [JPLite liteWithDatabase: @"tracks.sql"];
+    DRLite *db = [DRLite liteWithDatabase: @"tracks.sql"];
 
     NSArray *tracks = [Track findWhere: [NSDictionary dictionaryWithObjectsAndKeys: @"Song title", @"name", nil] inDB: db];
 
@@ -72,6 +72,8 @@ For now you would need to create code to create the tables and maintain the sche
 
 ## TODO
 
-Add more options to search for objects (bringing support for `OR` and `LIMIT`)
+* Add more options to search for objects (bringing support for `OR` and `LIMIT`)
+* Automagically create and update the underlying schema
+* Use bindings for the queries to prevent SQL Injections
 
 
