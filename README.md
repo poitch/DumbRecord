@@ -40,7 +40,7 @@ You should use the following class declaration
 ### Using the schema-maintaining technique
 
     NSString *database = @"tracks.sql";
-    [DumbRecord setup: database withModels: [NSArray arrayWithObjects: @"Track", nil]];
+    DRLite *db = [DumbRecord setup: database withModels: [NSArray arrayWithObjects: @"Track", nil]];
 
 This will auto-inspect the classes passed in the array and automatically create the tables (it won't update exisiting table - see TODO list)
 
@@ -50,11 +50,15 @@ For the following SQL
 
     CREATE TABLE tracks (track_id INTEGER PRIMARY KEY, name VARCHAR(255), duration INTEGER);
 
+The following code would create the table
+
+    NSError *error = nil;
+    DRLite *db = [DRLite liteWithDatabase: @"tracks.sql"];
+    [db query: @"CREATE TABLE tracks (track_id INTEGER PRIMARY KEY, name VARCHAR(255), duration INTEGER)" withError: &error];
+
 ### Inserting an object
 
 To insert a new object in the database
-
-    DRLite *db = [DRLite liteWithDatabase: @"tracks.sql"];
 
     Track *track = [[Track alloc] init];
     track.name = @"Song title";

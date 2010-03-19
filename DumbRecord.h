@@ -19,7 +19,7 @@
     
 }
 
-+ (void) setup: (NSString *) database;
-+ (void) setup: (NSString *) database withModels: (NSArray *)models;
++ (DRLite *) setup: (NSString *) database;
++ (DRLite *) setup: (NSString *) database withModels: (NSArray *)models;
 
 @end

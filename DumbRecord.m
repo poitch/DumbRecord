@@ -12,17 +12,17 @@
 
 @implementation DumbRecord
 
-+ (void) setup: (NSString *) database
++ (DRLite *) setup: (NSString *) database
 {
-    [DumbRecord setup: database withModels: nil];
+    return [DumbRecord setup: database withModels: nil];
 }
 
-+ (void) setup: (NSString *) database withModels: (NSArray *)models
++ (DRLite *) setup: (NSString *) database withModels: (NSArray *)models
 {
     DRLite *db = [[DRLite alloc] initWithDatabase: database];
 
     if ([models count] == 0) {
-        return;
+        return db;
     }
     
     // Get current list of tables
@@ -128,6 +128,7 @@
         }
     }
 
+    return db;
 }
 
 @end

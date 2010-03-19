@@ -23,10 +23,8 @@
     
     
     
-    [DumbRecord setup: database withModels: [NSArray arrayWithObjects: @"Track", nil]];
+    DRLite *db = [DumbRecord setup: database withModels: [NSArray arrayWithObjects: @"Track", nil]];
     
-
-    DRLite *db = [[DRLite alloc] initWithDatabase: database];
     rows = [db query: @"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name" withError: &error];
     n = [rows count];
     BOOL found = NO;
