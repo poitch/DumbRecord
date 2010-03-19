@@ -13,8 +13,51 @@
 
 - (void) testCreate
 {
-    [DumbRecord setup: @"testCreate.sql" withModels: [NSArray arrayWithObjects: @"Track", nil]];
-    STAssertTrue(YES, @"This should be yes");
+    NSArray *rows = nil;
+    NSError *error = nil;
+    int i, n;    
+    NSString *database = @"testCreate.sql";
+
+    [[NSFileManager defaultManager] removeItemAtPath: database error: &error];
+    
+    
+    
+    
+    [DumbRecord setup: database withModels: [NSArray arrayWithObjects: @"Track", nil]];
+    
+
+    DRLite *db = [[DRLite alloc] initWithDatabase: database];
+    rows = [db query: @"SELECT name FROM sqlite_master WHERE type='table' ORDER BY name" withError: &error];
+    n = [rows count];
+    BOOL found = NO;
+    for (i = 0; i < n; i++) {
+        if ([[[rows objectAtIndex: i] objectForKey: @"name"] isEqualToString: @"tracks"]) {
+            found = YES;
+            break;
+        }
+    }
+    
+    STAssertTrue(found, @"Could not find tracks table in database");
+}
+
+- (void) testInsert
+{
+    NSString *database = @"testCreate.sql";
+
+    DRLite *db = [[DRLite alloc] initWithDatabase: database];
+    Track *t1 = [[Track alloc] init];
+    t1.name = @"Track1";
+    t1.duration = [NSNumber numberWithInt: 350];
+    t1.someFloat = 3.14;
+    [t1 insert: db];
+    STAssertEquals(1, t1.track_id, @"track_id was not updated");
+    
+    NSArray *tracks = [Track findWhere: [NSDictionary dictionaryWithObjectsAndKeys: @"Track1", @"name", nil] inDB: db];
+    STAssertNotNil(tracks, @"find should have returned an array");
+    NSLog(@"%@", tracks);
+    STAssertTrue([tracks count] == 1, @"Number of items returned should be 1 but was %d", [tracks count]);
+    STAssertTrue([[[tracks objectAtIndex: 0] name] isEqualToString: @"Track1"], @"item found should have name Track1 but has %@", [[tracks objectAtIndex: 0] name]);
+    
 }
 
 @end

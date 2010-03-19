@@ -10,14 +10,14 @@
 #import "DumbRecord.h"
 
 @interface Track : DRModel {
-    NSNumber *track_id;
+    int track_id;
     NSString *name;
     NSNumber *duration;
     
     float someFloat;
 }
 
-@property (nonatomic, retain) NSNumber *track_id;
+@property (nonatomic) int track_id;
 @property (nonatomic, retain) NSString *name;
 @property (nonatomic, retain) NSNumber *duration;
 @property (nonatomic) float someFloat;

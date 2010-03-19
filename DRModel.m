@@ -49,10 +49,12 @@
     NSMutableArray *values = [[NSMutableArray alloc] initWithCapacity: n];
     for (i = 0; i < n; i++) {
         NSString *key = [keys objectAtIndex: i];
-        id value = [self valueForKey: key];
-        if (value != nil && ![value isKindOfClass: [NSNull class]]) {
-            [columns addObject: key];
-            [values addObject: value];
+        if (![key isEqualToString: idColumnName]) {
+            id value = [self valueForKey: key];
+            if (value != nil && ![value isKindOfClass: [NSNull class]]) {
+                [columns addObject: key];
+                [values addObject: value];
+            }
         }
     }
     
@@ -73,6 +75,7 @@
     }
     query = [query stringByAppendingString: @")"];
     
+    //NSLog(@"%@", query);
 
     NSError *error = nil;
     [db query: query withError: &error];

@@ -13,11 +13,11 @@ Dumb Record is a very simplistic ORM for Objective-C and Cocoa project. It is bu
 
 Models must inherit the DRModel class, the attributes must correspond to the columns of the table.
 
+All properties must be declared using Objective-C 2.0 dot notation (@property ...)
+
+There should be one column name <table_name>_id and it has to be of type int.
+
 The name of the class will be pluralized (it's adding an `s` to the lower cased class name).
-
-For the following SQL
-
-    CREATE TABLE tracks (track_id INTEGER PRIMARY KEY, name VARCHAR(255), duration INTEGER);
 
 You should use the following class declaration
 
@@ -25,17 +25,32 @@ You should use the following class declaration
     #import "DumbRecord/DumbRecord.h"
 
     @interface Track : DRModel {
-        NSNumber *track_id;
+        int track_id;
         NSString *name;
         NSNumber *duration;
         NSNumber *created_at;
     }
 
-    @property (nonatomic, retain) NSNumber *track_id;
+    @property (nonatomic) int track_id;
     @property (nonatomic, retain) NSString *name;
     @property (nonatomic, retain) NSNumber *duration;
 
     @end
+
+### Using the schema-maintaining technique
+
+    NSString *database = @"tracks.sql";
+    [DumbRecord setup: database withModels: [NSArray arrayWithObjects: @"Track", nil]];
+
+This will auto-inspect the classes passed in the array and automatically create the tables (it won't update exisiting table - see TODO list)
+
+### Creating the database yourself
+
+For the following SQL
+
+    CREATE TABLE tracks (track_id INTEGER PRIMARY KEY, name VARCHAR(255), duration INTEGER);
+
+### Inserting an object
 
 To insert a new object in the database
 
@@ -46,14 +61,20 @@ To insert a new object in the database
     track.duration = [NSNumber numberWithInt: 156];
     [track insert: db];
 
+### Updating an object
+
 To update the value of that object
 
     track.duration = [NSNumber numberWithInt: 136];
     [track update: db];
 
+### Removing an object
+
 To remove that object from the database
 
     [track delete: db];
+
+### Searching for object
 
 After that you can find objects in a sqlite database as follows:
 
@@ -73,7 +94,9 @@ For now you would need to create code to create the tables and maintain the sche
 ## TODO
 
 * Add more options to search for objects (bringing support for `OR` and `LIMIT`)
-* Automagically create and update the underlying schema
+* Automagically update the underlying schema
 * Use bindings for the queries to prevent SQL Injections
+* Improve pluralization method
+* Add support for NSDate
 
 

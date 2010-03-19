@@ -43,12 +43,18 @@
     for (i = 0; i < n; i++) {
         NSString *model = [models objectAtIndex: i];
         NSString *table_name = [[model lowercaseString] plural];
-        NSLog(@"%@ %@", model, table_name);
+        NSString *id_column_name = [[model lowercaseString] stringByAppendingString: @"_id"];
+        
+        
+        //NSLog(@"%@ %@ %@", model, table_name, id_column_name);
         if ([tables containsObject: table_name]) {
             // Table exists already, figure out the differences
         } else {
             // New model, create table
             NSMutableDictionary *columns = [[NSMutableDictionary alloc] init];
+            
+            [columns setObject: @"INTEGER PRIMARY KEY" forKey: id_column_name];
+
             
             id modelClass = objc_getClass([model cStringUsingEncoding: NSASCIIStringEncoding]);
             unsigned int outCount, i;
@@ -62,7 +68,7 @@
                                                     encoding: NSASCIIStringEncoding];
 
                 NSArray *chunks = [attr componentsSeparatedByString: @","];
-                NSLog(@"%@", chunks);
+                //NSLog(@"%@", chunks);
                 NSString *type = [chunks objectAtIndex: 0];
                 if ([[type substringWithRange: NSMakeRange(1, 1)] isEqualToString: @"@"]) {
                     type = [type substringWithRange: NSMakeRange(3, [type length] - 4)];
@@ -71,35 +77,38 @@
                     type = [type substringFromIndex: 1];
                 }
                 
-                //NSString *
-                NSLog(@"%@ %@", name, type);
-
-                // TODO, how to differentiate floats from ints?
-                if ([type isEqualToString: @"i"]) {
-                    [columns setObject: @"INTEGER" forKey: name];
-                } else if ([type isEqualToString: @"I"]) {
-                    [columns setObject: @"INTEGER" forKey: name];                    
-                } else if ([type isEqualToString: @"f"]) {
-                    [columns setObject: @"FLOAT" forKey: name];
-                } else if ([type isEqualToString: @"l"]) {
-                    [columns setObject: @"INTEGER" forKey: name];
-                } else if ([type isEqualToString: @"s"]) {
-                    [columns setObject: @"INTEGER" forKey: name];
-                } else if ([type isEqualToString: @"NSNumber"]) {
-                    [columns setObject: @"INTEGER" forKey: name];
-                } else if ([type isEqualToString: @"NSString"]) {
-                    [columns setObject: @"TEXT" forKey: name];
-                } else if ([type isEqualToString: @"NSData"]) {
-                    [columns setObject: @"BLOB" forKey: name];
-                } else if ([type isEqualToString: @"NSDate"]) {
-                    [columns setObject: @"INTEGER" forKey: name];
-                } else {
-                    // Ignore unknown
-                    NSLog(@"Ignoring column %@ of type %@", name, type);
+                
+                if (![name isEqualToString: id_column_name]) {
+                    //NSLog(@"%@ %@", name, type);
+                    
+                    // TODO, how to differentiate floats from ints?
+                    if ([type isEqualToString: @"i"]) {
+                        [columns setObject: @"INTEGER" forKey: name];
+                    } else if ([type isEqualToString: @"I"]) {
+                        [columns setObject: @"INTEGER" forKey: name];                    
+                    } else if ([type isEqualToString: @"f"]) {
+                        [columns setObject: @"FLOAT" forKey: name];
+                    } else if ([type isEqualToString: @"l"]) {
+                        [columns setObject: @"INTEGER" forKey: name];
+                    } else if ([type isEqualToString: @"s"]) {
+                        [columns setObject: @"INTEGER" forKey: name];
+                    } else if ([type isEqualToString: @"NSNumber"]) {
+                        [columns setObject: @"INTEGER" forKey: name];
+                    } else if ([type isEqualToString: @"NSString"]) {
+                        [columns setObject: @"TEXT" forKey: name];
+                    } else if ([type isEqualToString: @"NSData"]) {
+                        [columns setObject: @"BLOB" forKey: name];
+                    } else if ([type isEqualToString: @"NSDate"]) {
+                        [columns setObject: @"INTEGER" forKey: name];
+                    } else {
+                        // Ignore unknown
+                        NSLog(@"Ignoring column %@ of type %@", name, type);
+                    }
+                    
                 }
             }
             
-            NSLog(@"%@", columns);
+            //NSLog(@"%@", columns);
             
             NSString *query = [NSString stringWithFormat: @"CREATE TABLE %@ (", table_name];
             NSEnumerator *enumerator = [columns keyEnumerator];
@@ -113,8 +122,9 @@
                 j++;
             }
             query = [query stringByAppendingString: @")"];
-            NSLog(@"%@", query);
+            //NSLog(@"%@", query);
             
+            [db query: query withError: &error];
         }
     }
 
