@@ -1,6 +1,6 @@
 //
-//  JPLite.h
-//  TestMetrics
+//  DRLite.h
+//  DumbRecord
 //
 //  Created by Jerome Poichet on 5/13/09.
 //  Copyright 2009 Jerome Poichet. All rights reserved.
@@ -15,7 +15,7 @@
 #import <sqlite3.h>
 
 
-@interface JPLite : NSObject {
+@interface DRLite : NSObject {
 @private
     NSString *_databasePath;
     sqlite3 *_database;
@@ -25,7 +25,7 @@
 @property (nonatomic, retain) NSString *databasePath;
 @property BOOL created;
 
-+ (JPLite *) liteWithDatabase: (NSString *) database;
++ (DRLite *) liteWithDatabase: (NSString *) database;
 - (id) initWithDatabase: (NSString *) database;
 
 - (NSArray *)query: (NSString *)query withError: (NSError **)error;

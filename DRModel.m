@@ -1,23 +1,23 @@
 //
-//  JPModel.m
-//  JPData
+//  DRModel.m
+//  DumbRecord
 //
 //  Created by Jerome Poichet on 3/12/10.
 //  Copyright 2010 Jerome Poichet. All rights reserved.
 //
 
-#import "JPModel.h"
-#import "JPLite.h"
+#import "DRModel.h"
+#import "DRLite.h"
 #include <objc/runtime.h> //objc runtime api’s
 #import "NSStringAdditions.h"
 
-@interface JPModel (Private)
+@interface DRModel (Private)
 
 + (NSArray *) keys;
 
 @end
 
-@implementation JPModel
+@implementation DRModel
 
 - (NSString *) description
 {
@@ -35,7 +35,7 @@
 }
 
 // insert model
-- (void) insert: (JPLite *) db
+- (void) insert: (DRLite *) db
 {
     NSArray *keys = [[self class] keys];
     NSString *className = NSStringFromClass([self class]);
@@ -86,7 +86,7 @@
 }
 
 // update model
-- (void) update: (JPLite *) db
+- (void) update: (DRLite *) db
 {
     NSArray *keys = [[self class] keys];
     NSString *className = NSStringFromClass([self class]);
@@ -137,7 +137,7 @@
 }
 
 // delete model from database
-- (void) delete: (JPLite *) db
+- (void) delete: (DRLite *) db
 {
     NSString *className = NSStringFromClass([self class]);
     NSString *idColumnName = [[className lowercaseString] stringByAppendingString: @"_id"];
@@ -153,7 +153,7 @@
 }
 
 // Search for objects in the database
-+ (NSArray *) findWhere: (NSDictionary *) clauses inDB: (JPLite *)db
++ (NSArray *) findWhere: (NSDictionary *) clauses inDB: (DRLite *)db
 {
     Class class = [self class];
     NSString *className = NSStringFromClass(class);
@@ -231,7 +231,7 @@
 
 @end
 
-@implementation JPModel (Private)
+@implementation DRModel (Private)
 
 // Columns
 + (NSArray *) keys

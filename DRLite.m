@@ -1,39 +1,36 @@
 //
-//  JPLite.m
-//  TestMetrics
+//  DRLite.m
+//  DumbRecord
 //
 //  Created by Jerome Poichet on 5/13/09.
 //  Copyright 2009 Jerome Poichet. All rights reserved.
 //
 
-#import "JPLite.h"
+#import "DRLite.h"
 
 static NSError *generate_error(int code, NSString *str)
 {       
     NSDictionary *dict = [NSDictionary dictionaryWithObject:str forKey:NSLocalizedDescriptionKey]; 
-    return [NSError errorWithDomain:@"com.frencaze.JPLite.ErrorDomain" code:code userInfo:dict]; 
+    return [NSError errorWithDomain:@"com.frencaze.DumbRecord.ErrorDomain" code:code userInfo:dict]; 
 }   
 
-@implementation JPLite
+@implementation DRLite
 
 @synthesize databasePath = _databasePath;
 @synthesize created = _created;
 
-+ (JPLite *) liteWithDatabase: (NSString *) database
++ (DRLite *) liteWithDatabase: (NSString *) database
 {
-    return [[JPLite alloc] initWithDatabase: database];
+    return [[DRLite alloc] initWithDatabase: database];
 }
 
 - (id) initWithDatabase: (NSString *) database
 {
     if (self = [super init]) {
-        NSLog(@"JPLite: %@", database);
-        
         _databasePath = [database retain];
         
         NSFileManager *fm = [NSFileManager defaultManager];
         if ([fm fileExistsAtPath: _databasePath] == YES) {
-            NSLog(@"JPLite: File already there");
             _created = NO;
         } else {
             _created = YES;

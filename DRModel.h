@@ -1,6 +1,6 @@
 //
 //  JPModel.h
-//  JPData
+//  DumbRecord
 //
 //  Created by Jerome Poichet on 3/12/10.
 //  Copyright 2010 Jerome Poichet. All rights reserved.
@@ -12,16 +12,16 @@
 #import <Cocoa/Cocoa.h>
 #endif
 
-@class JPLite;
+@class DRLite;
 
-@interface JPModel : NSObject {
+@interface DRModel : NSObject {
 
 }
 
-- (void) insert: (JPLite *) db;
-- (void) update: (JPLite *) db;
-- (void) delete: (JPLite *) db;
+- (void) insert: (DRLite *) db;
+- (void) update: (DRLite *) db;
+- (void) delete: (DRLite *) db;
 
-+ (NSArray *) findWhere: (NSDictionary *) clauses inDB: (JPLite *)db;
++ (NSArray *) findWhere: (NSDictionary *) clauses inDB: (DRLite *)db;
 
 @end
