@@ -88,19 +88,12 @@ After that you can find objects in a sqlite database as follows:
 
 The where dictionary is column name for the key and the value to match the search for. It does `AND` on all entries.
 
-## Notes:
-
-The primary key has to be the name of the class (lower case) followed by _id.
-
-For now you would need to create code to create the tables and maintain the schema up-to-date.
-
-
 ## TODO
 
-* Add more options to search for objects (bringing support for `OR` and `LIMIT`)
 * Automagically update the underlying schema
+* Add support for NSDate
+* Add more options to search for objects (bringing support for `OR` and `LIMIT`)
 * Use bindings for the queries to prevent SQL Injections
 * Improve pluralization method
-* Add support for NSDate
 
 
