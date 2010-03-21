@@ -31,4 +31,6 @@
 - (NSArray *)query: (NSString *)query withError: (NSError **)error;
 - (NSNumber *)lastId; 
 
++ (void) setVerbose: (BOOL) verbose;
+
 @end

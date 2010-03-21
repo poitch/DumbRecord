@@ -12,7 +12,9 @@ static NSError *generate_error(int code, NSString *str)
 {       
     NSDictionary *dict = [NSDictionary dictionaryWithObject:str forKey:NSLocalizedDescriptionKey]; 
     return [NSError errorWithDomain:@"com.frencaze.DumbRecord.ErrorDomain" code:code userInfo:dict]; 
-}   
+}
+
+static BOOL __drlite_verbose = false;
 
 @implementation DRLite
 
@@ -54,9 +56,10 @@ static NSError *generate_error(int code, NSString *str)
 - (NSArray *)query: (NSString *)query withError: (NSError **)error
 {
     NSMutableArray *results = nil;
-    
     sqlite3_stmt *stmt;
 
+    if (__drlite_verbose) NSLog(@"%@", query);
+    
     if (!_database) {
         *error = generate_error(100, @"Could not open database");
         return nil;
@@ -123,6 +126,11 @@ static NSError *generate_error(int code, NSString *str)
 - (NSNumber *)lastId
 {
     return [NSNumber numberWithLongLong: sqlite3_last_insert_rowid(_database)];
+}
+
++ (void) setVerbose: (BOOL) verbose
+{
+    __drlite_verbose = verbose;
 }
 
 @end

@@ -108,23 +108,25 @@
                 }
             }
             
-            //NSLog(@"%@", columns);
+            NSLog(@"%@", columns);
             
             NSString *query = [NSString stringWithFormat: @"CREATE TABLE %@ (", table_name];
             NSEnumerator *enumerator = [columns keyEnumerator];
             NSString *columnName;
-            int j, m = [columns count];
+            int j = 0, m = [columns count];
             while ((columnName = [enumerator nextObject])) {
                 query = [query stringByAppendingFormat: @"%@ %@", columnName, [columns objectForKey: columnName]];
-                if (j < m ) {
+                if (j < m - 1) {
                     query = [query stringByAppendingString: @", "];
                 }
                 j++;
             }
             query = [query stringByAppendingString: @")"];
-            //NSLog(@"%@", query);
-            
+            NSLog(@"%@", query);
             [db query: query withError: &error];
+            if (error) {
+                NSLog(@"Failed to create table %@: %@", table_name, error);
+            }
         }
     }
 
