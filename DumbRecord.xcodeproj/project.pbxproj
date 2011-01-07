@@ -21,6 +21,10 @@
 		631F6B1C114FEC6000EB4434 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 631F6B1B114FEC6000EB4434 /* Cocoa.framework */; };
 		631F6B24114FEC7000EB4434 /* SetupTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 631F6AE0114FEB6000EB4434 /* SetupTests.m */; };
 		631F6B28114FEFAC00EB4434 /* Track.m in Sources */ = {isa = PBXBuildFile; fileRef = 631F6B27114FEFAC00EB4434 /* Track.m */; };
+		6396F3B312D798A6003BE6E2 /* LiteTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6396F3B212D798A6003BE6E2 /* LiteTest.m */; };
+		6396F3B512D798BF003BE6E2 /* DRLite.m in Sources */ = {isa = PBXBuildFile; fileRef = 02410BCF114B5B50002CE874 /* DRLite.m */; };
+		6396F3B812D798D8003BE6E2 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 02410BDC114B5B7D002CE874 /* libsqlite3.dylib */; };
+		6396F3D812D7990B003BE6E2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6396F3D712D7990B003BE6E2 /* Foundation.framework */; };
 		8DC2EF530486A6940098B216 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C1666FE841158C02AAC07 /* InfoPlist.strings */; };
 		8DC2EF570486A6940098B216 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -57,6 +61,9 @@
 		631F6B25114FECED00EB4434 /* SetupTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SetupTests.h; path = Tests/SetupTests.h; sourceTree = "<group>"; };
 		631F6B26114FEFAC00EB4434 /* Track.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Track.h; path = Tests/Track.h; sourceTree = "<group>"; };
 		631F6B27114FEFAC00EB4434 /* Track.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Track.m; path = Tests/Track.m; sourceTree = "<group>"; };
+		6396F3AA12D79885003BE6E2 /* LiteTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LiteTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6396F3B212D798A6003BE6E2 /* LiteTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = LiteTest.m; path = Tests/LiteTest.m; sourceTree = "<group>"; };
+		6396F3D712D7990B003BE6E2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		8DC2EF5A0486A6940098B216 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8DC2EF5B0486A6940098B216 /* DumbRecord.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = DumbRecord.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E79907B2D74100F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
@@ -69,6 +76,15 @@
 			files = (
 				631F6B18114FEC5800EB4434 /* DumbRecord.framework in Frameworks */,
 				631F6B1C114FEC6000EB4434 /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6396F3A812D79885003BE6E2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6396F3B812D798D8003BE6E2 /* libsqlite3.dylib in Frameworks */,
+				6396F3D812D7990B003BE6E2 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +106,7 @@
 			children = (
 				8DC2EF5B0486A6940098B216 /* DumbRecord.framework */,
 				631F6B13114FEC4800EB4434 /* Tests.octest */,
+				6396F3AA12D79885003BE6E2 /* LiteTest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -103,6 +120,7 @@
 				089C1665FE841158C02AAC07 /* Resources */,
 				0867D69AFE84028FC02AAC07 /* External Frameworks and Libraries */,
 				034768DFFF38A50411DB9C8B /* Products */,
+				6396F3D712D7990B003BE6E2 /* Foundation.framework */,
 			);
 			name = DRecord;
 			sourceTree = "<group>";
@@ -172,12 +190,21 @@
 		631F6ADE114FEB3100EB4434 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				6396F3B012D79890003BE6E2 /* Lite */,
 				631F6AE0114FEB6000EB4434 /* SetupTests.m */,
 				631F6B25114FECED00EB4434 /* SetupTests.h */,
 				631F6B26114FEFAC00EB4434 /* Track.h */,
 				631F6B27114FEFAC00EB4434 /* Track.m */,
 			);
 			name = Tests;
+			sourceTree = "<group>";
+		};
+		6396F3B012D79890003BE6E2 /* Lite */ = {
+			isa = PBXGroup;
+			children = (
+				6396F3B212D798A6003BE6E2 /* LiteTest.m */,
+			);
+			name = Lite;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -216,6 +243,22 @@
 			productReference = 631F6B13114FEC4800EB4434 /* Tests.octest */;
 			productType = "com.apple.product-type.bundle";
 		};
+		6396F3A912D79885003BE6E2 /* LiteTest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6396F3B112D79890003BE6E2 /* Build configuration list for PBXNativeTarget "LiteTest" */;
+			buildPhases = (
+				6396F3A712D79885003BE6E2 /* Sources */,
+				6396F3A812D79885003BE6E2 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = LiteTest;
+			productName = LiteTest;
+			productReference = 6396F3AA12D79885003BE6E2 /* LiteTest */;
+			productType = "com.apple.product-type.tool";
+		};
 		8DC2EF4F0486A6940098B216 /* DumbRecord */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1DEB91AD08733DA50010E9CD /* Build configuration list for PBXNativeTarget "DumbRecord" */;
@@ -242,7 +285,14 @@
 			isa = PBXProject;
 			buildConfigurationList = 1DEB91B108733DA50010E9CD /* Build configuration list for PBXProject "DumbRecord" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
 			mainGroup = 0867D691FE84028FC02AAC07 /* DRecord */;
 			productRefGroup = 034768DFFF38A50411DB9C8B /* Products */;
 			projectDirPath = "";
@@ -250,6 +300,7 @@
 			targets = (
 				8DC2EF4F0486A6940098B216 /* DumbRecord */,
 				631F6B12114FEC4800EB4434 /* Tests */,
+				6396F3A912D79885003BE6E2 /* LiteTest */,
 			);
 		};
 /* End PBXProject section */
@@ -295,6 +346,15 @@
 			files = (
 				631F6B24114FEC7000EB4434 /* SetupTests.m in Sources */,
 				631F6B28114FEFAC00EB4434 /* Track.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6396F3A712D79885003BE6E2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6396F3B512D798BF003BE6E2 /* DRLite.m in Sources */,
+				6396F3B312D798A6003BE6E2 /* LiteTest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -452,6 +512,52 @@
 			};
 			name = Release;
 		};
+		6396F3AE12D79885003BE6E2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = LiteTest;
+			};
+			name = Debug;
+		};
+		6396F3AF12D79885003BE6E2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_ENABLE_FIX_AND_CONTINUE = NO;
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "$(SYSTEM_LIBRARY_DIR)/Frameworks/AppKit.framework/Headers/AppKit.h";
+				INSTALL_PATH = /usr/local/bin;
+				OTHER_LDFLAGS = (
+					"-framework",
+					Foundation,
+					"-framework",
+					AppKit,
+				);
+				PREBINDING = NO;
+				PRODUCT_NAME = LiteTest;
+				ZERO_LINK = NO;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -478,6 +584,15 @@
 			buildConfigurations = (
 				631F6B15114FEC4900EB4434 /* Debug */,
 				631F6B16114FEC4900EB4434 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6396F3B112D79890003BE6E2 /* Build configuration list for PBXNativeTarget "LiteTest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6396F3AE12D79885003BE6E2 /* Debug */,
+				6396F3AF12D79885003BE6E2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -14,6 +14,8 @@
 
 #import <sqlite3.h>
 
+#define NOW() (long)[[NSDate date] timeIntervalSince1970]
+#define NSNOW() [NSNumber numberWithLong: NOW()]
 
 @interface DRLite : NSObject {
 @private
@@ -28,6 +30,7 @@
 + (DRLite *) liteWithDatabase: (NSString *) database;
 - (id) initWithDatabase: (NSString *) database;
 
+- (BOOL) insert: (NSString *) query withArguments: (NSArray *) args andError: (NSError **) error;
 - (NSArray *)query: (NSString *)query withError: (NSError **)error;
 - (NSNumber *)lastId; 
 
