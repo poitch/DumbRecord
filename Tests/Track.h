@@ -13,13 +13,20 @@
     int track_id;
     NSString *name;
     NSNumber *duration;
+    NSDate *createdOn;
     
+    NSString *someUnique;
     float someFloat;
+    BOOL someBool;
 }
 
 @property (nonatomic) int track_id;
 @property (nonatomic, retain) NSString *name;
 @property (nonatomic, retain) NSNumber *duration;
+@property (nonatomic, retain) NSDate *createdOn;
+
+@property (nonatomic, retain) NSString *someUnique;
 @property (nonatomic) float someFloat;
+@property (nonatomic) BOOL someBool;
 
 @end

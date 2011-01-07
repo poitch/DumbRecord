@@ -14,10 +14,26 @@
 @interface DRModel (Private)
 
 + (NSArray *) keys;
++ (NSDictionary *) keyAndTypes;
 
 @end
 
 @implementation DRModel
+
++ (NSArray *) indexes
+{
+    return nil;
+}
+
++ (BOOL) shouldColumnBeUnique: (NSString *) columnName
+{
+    return NO;
+}
+
++ (id) defaultValueForColumn: (NSString *) columnName
+{
+    return nil;
+}
 
 - (NSString *) description
 {
@@ -51,9 +67,21 @@
         NSString *key = [keys objectAtIndex: i];
         if (![key isEqualToString: idColumnName]) {
             id value = [self valueForKey: key];
+            id defaultValue = [[self class] defaultValueForColumn: key];
             if (value != nil && ![value isKindOfClass: [NSNull class]]) {
                 [columns addObject: key];
-                [values addObject: value];
+                if ([value isKindOfClass: [NSDate class]]) {
+                    [values addObject: [NSNumber numberWithInt: [value timeIntervalSince1970]]];
+                } else {
+                    [values addObject: value];                    
+                }
+            } else if (defaultValue != nil && ![defaultValue isKindOfClass: [NSNull class]]) {
+                [columns addObject: key];
+                if ([defaultValue isKindOfClass: [NSDate class]]) {
+                    [values addObject: [NSNumber numberWithInt: [defaultValue timeIntervalSince1970]]];
+                } else {
+                    [values addObject: defaultValue];                    
+                }
             }
         }
     }
@@ -76,7 +104,9 @@
     query = [query stringByAppendingString: @")"];
     
     //NSLog(@"%@", query);
-
+    [columns release];
+    [values release];
+    
     NSError *error = nil;
     [db query: query withError: &error];
     if (error) {
@@ -103,12 +133,18 @@
     for (i = 0; i < n; i++) {
         NSString *key = [keys objectAtIndex: i];
         id value = [self valueForKey: key];
+        id defaultValue = [[self class] defaultValueForColumn: key];
+
         if (![key isEqualToString: idColumnName]) {
-            [columns addObject: key];
-            if (value == nil) {
-                [values addObject: [NSNull null]];
+            if (value == nil && defaultValue != nil) {
+                
             } else {
-                [values addObject: value];                
+                [columns addObject: key];
+                if (value == nil) {
+                    [values addObject: [NSNull null]];
+                } else {
+                    [values addObject: value];                
+                }                
             }
         }
     }
@@ -129,6 +165,8 @@
 
     query = [query stringByAppendingFormat: @" WHERE %@ = %@", idColumnName, [self valueForKey: idColumnName]];
     
+    [columns release];
+    [values release];
     //NSLog(@"%@", query);
 
     NSError *error = nil;
@@ -153,6 +191,55 @@
         NSLog(@"%@", error);
     }
     
+}
+
++ (id) loadRow: (NSDictionary *) row intoModel: (Class) class
+{
+    NSEnumerator *enumerator = [row keyEnumerator];
+    NSString *key;
+
+    NSDictionary *types = [class keyAndTypes];
+    id obj = [[[class alloc] init] autorelease];
+    
+    while ((key = [enumerator nextObject])) {
+        @try {
+            // If destination is NSDate then convert from integer to nsdate
+            if (![[row objectForKey: key] isKindOfClass: [NSNull class]]) {
+                if ([[types objectForKey: key] isEqualToString: @"NSDate"]) {
+                    [obj setValue: [NSDate dateWithTimeIntervalSince1970: [[row objectForKey: key] intValue]] forKey: key];
+                } else {
+                    [obj setValue: [row objectForKey: key] forKey: key];
+                }
+            }
+        }
+        @catch (NSException *e) {
+            NSLog(@"%@", e);
+        }
+        
+    }
+    
+    return obj;
+    
+}
+
++ (id) getInstance: (int) instanceId inDB: (DRLite *) db
+{
+    Class class = [self class];
+    NSString *className = NSStringFromClass(class);
+    NSString *idColumnName = [[className lowercaseString] stringByAppendingString: @"_id"];
+    NSString *tableName = [[className lowercaseString] plural];    
+    NSString *query = [NSString stringWithFormat: @"SELECT * FROM %@ WHERE %@ = %d", tableName, idColumnName, instanceId];
+    NSError *error = nil;
+    NSArray *rows;
+
+    rows = [db query: query withError: &error];
+    if (error) {
+        NSLog(@"%@", error);
+        return nil;
+    }
+    
+    NSDictionary *row = [rows objectAtIndex: 0];
+    return [DRModel loadRow: row intoModel: class];
 }
 
 // Search for objects in the database
@@ -193,6 +280,8 @@
                 query = [query stringByAppendingString: @" AND "];
             }
         }
+        
+        [parts release];
     }
     
     //NSLog(@"%@", query);
@@ -208,33 +297,60 @@
     results = [[NSMutableArray alloc] initWithCapacity: n];
     for (i = 0; i < n; i++) {
         NSDictionary *row = [rows objectAtIndex: i];
-        NSEnumerator *enumerator = [row keyEnumerator];
-        NSString *key;
-
-        id obj = [[class alloc] init];
-        
-        while ((key = [enumerator nextObject])) {
-            @try {
-                if (![[row objectForKey: key] isKindOfClass: [NSNull class]]) {
-                    [obj setValue: [row objectForKey: key] forKey: key];                                    
-                }
-            }
-            @catch (NSException *e) {
-                NSLog(@"%@", e);
-            }
-
-        }
-        
+        id obj = [DRModel loadRow: row intoModel: class];
         [results addObject: obj];
     }
     //NSLog(@"%@", results);
     
-    return results;
+    return [results autorelease];
 }
 
 @end
 
 @implementation DRModel (Private)
+
+// Columns and their types
++ (NSDictionary *) keyAndTypes
+{
+    unsigned int outCount = 0;
+    objc_property_t *properties = class_copyPropertyList([self class], &outCount);
+    int i;
+    NSMutableDictionary *keys = [[[NSMutableDictionary alloc] initWithCapacity: outCount] autorelease];
+    for(i = 0; i < outCount; i++) {
+        objc_property_t property = properties[i];
+        const char *propName = property_getName(property);
+        if(propName) {
+            NSString *propertyName = [NSString stringWithCString: propName encoding: NSUTF8StringEncoding];
+            NSString *attr = [NSString stringWithCString: property_getAttributes(property)
+                                                encoding: NSASCIIStringEncoding];
+            
+            NSArray *chunks = [attr componentsSeparatedByString: @","];
+            NSString *type = [chunks objectAtIndex: 0];
+            if ([[type substringWithRange: NSMakeRange(1, 1)] isEqualToString: @"@"]) {
+                type = [type substringWithRange: NSMakeRange(3, [type length] - 4)];
+            } else {
+                // Primitive type
+                type = [type substringFromIndex: 1];
+            }
+            
+            NSDictionary *typeMap = [NSDictionary dictionaryWithObjectsAndKeys: 
+                                     @"int", @"i",
+                                     @"int", @"I",
+                                     @"float", @"f",
+                                     @"long", @"l",
+                                     @"short", @"s",
+                                     @"BOOL", @"c",
+                                     @"NSNumber", @"NSNumber",
+                                     @"NSString", @"NSString",
+                                     @"NSData", @"NSData",
+                                     @"NSDate", @"NSDate",
+                                     nil];
+            [keys setObject: [typeMap objectForKey: type] forKey: propertyName];
+        }
+    }
+    free(properties);
+    return keys;
+}
 
 // Columns
 + (NSArray *) keys
@@ -242,7 +358,7 @@
     unsigned int outCount = 0;
     objc_property_t *properties = class_copyPropertyList([self class], &outCount);
     int i;
-    NSMutableArray *keys = [[NSMutableArray alloc] initWithCapacity: outCount];
+    NSMutableArray *keys = [[[NSMutableArray alloc] initWithCapacity: outCount] autorelease];
     for(i = 0; i < outCount; i++) {
         objc_property_t property = properties[i];
         const char *propName = property_getName(property);

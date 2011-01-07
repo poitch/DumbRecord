@@ -23,7 +23,7 @@ static BOOL __drlite_verbose = false;
 
 + (DRLite *) liteWithDatabase: (NSString *) database
 {
-    return [[DRLite alloc] initWithDatabase: database];
+    return [[[DRLite alloc] initWithDatabase: database] autorelease];
 }
 
 - (id) initWithDatabase: (NSString *) database
@@ -61,12 +61,17 @@ static BOOL __drlite_verbose = false;
     if (__drlite_verbose) NSLog(@"%@", query);
     
     if (!_database) {
-        *error = generate_error(100, @"Could not open database");
+        if (error) {
+            *error = generate_error(100, @"Could not open database");            
+        }
+
         return nil;
     }
     
     if(sqlite3_prepare_v2(_database, [query UTF8String], -1, &stmt, NULL) != SQLITE_OK) {
-        *error = generate_error(sqlite3_errcode(_database), [NSString stringWithCString: sqlite3_errmsg(_database) encoding: NSUTF8StringEncoding]);
+        if (error) {
+            *error = generate_error(sqlite3_errcode(_database), [NSString stringWithCString: sqlite3_errmsg(_database) encoding: NSUTF8StringEncoding]);            
+        }
         return nil;
     }
 
@@ -120,7 +125,7 @@ static BOOL __drlite_verbose = false;
     }
 
     sqlite3_finalize(stmt);
-    return results;
+    return [results autorelease];
 }
 
 - (NSNumber *)lastId

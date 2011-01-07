@@ -23,5 +23,11 @@
 - (void) delete: (DRLite *) db;
 
 + (NSArray *) findWhere: (NSDictionary *) clauses inDB: (DRLite *)db;
++ (id) getInstance: (int) instanceId inDB: (DRLite *) db;
+
++ (BOOL) shouldColumnBeUnique: (NSString *) columnName;
++ (id) defaultValueForColumn: (NSString *) columnName;
+
++ (NSArray *) indexes;
 
 @end

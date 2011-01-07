@@ -11,6 +11,28 @@
 
 @implementation Track
 
-@synthesize track_id, name, duration, someFloat;
+@synthesize track_id, name, duration, someFloat, someUnique, someBool, createdOn;
+
++ (id) defaultValueForColumn: (NSString *) columnName
+{
+    if ([columnName isEqualToString: @"createdOn"]) {
+        return [NSDate date];
+    }
+    return [DRModel defaultValueForColumn: columnName];
+}
+
++ (BOOL) shouldColumnBeUnique: (NSString *) columnName
+{
+    if ([columnName isEqualToString: @"someUnique"]) {
+        return YES;
+    }
+    return [DRModel shouldColumnBeUnique: columnName];
+}
+
+
++ (NSArray *) indexes
+{
+    return [NSArray arrayWithObjects: @"name", [NSArray arrayWithObjects: @"someFloat", @"someBool", nil], nil];
+}
 
 @end

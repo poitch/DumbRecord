@@ -19,7 +19,7 @@
 
 + (DRLite *) setup: (NSString *) database withModels: (NSArray *)models
 {
-    DRLite *db = [[DRLite alloc] initWithDatabase: database];
+    DRLite *db = [[[DRLite alloc] initWithDatabase: database] autorelease];
 
     if ([models count] == 0) {
         return db;
@@ -55,10 +55,11 @@
             
             [columns setObject: @"INTEGER PRIMARY KEY" forKey: id_column_name];
 
-            
+            Class class = NSClassFromString(model);            
             id modelClass = objc_getClass([model cStringUsingEncoding: NSASCIIStringEncoding]);
             unsigned int outCount, i;
             objc_property_t *properties = class_copyPropertyList(modelClass, &outCount);
+            
             for (i = 0; i < outCount; i++) {
                 objc_property_t property = properties[i];
                 
@@ -77,29 +78,33 @@
                     type = [type substringFromIndex: 1];
                 }
                 
+                // Figure out if we need uniqueness
+                BOOL unique = [class shouldColumnBeUnique: name];
                 
                 if (![name isEqualToString: id_column_name]) {
-                    //NSLog(@"%@ %@", name, type);
+                    NSLog(@"%@ %@ %@", name, type, unique ? @"Unique" : @"");
                     
-                    // TODO, how to differentiate floats from ints?
-                    if ([type isEqualToString: @"i"]) {
-                        [columns setObject: @"INTEGER" forKey: name];
-                    } else if ([type isEqualToString: @"I"]) {
-                        [columns setObject: @"INTEGER" forKey: name];                    
-                    } else if ([type isEqualToString: @"f"]) {
-                        [columns setObject: @"FLOAT" forKey: name];
-                    } else if ([type isEqualToString: @"l"]) {
-                        [columns setObject: @"INTEGER" forKey: name];
-                    } else if ([type isEqualToString: @"s"]) {
-                        [columns setObject: @"INTEGER" forKey: name];
-                    } else if ([type isEqualToString: @"NSNumber"]) {
-                        [columns setObject: @"INTEGER" forKey: name];
-                    } else if ([type isEqualToString: @"NSString"]) {
-                        [columns setObject: @"TEXT" forKey: name];
-                    } else if ([type isEqualToString: @"NSData"]) {
-                        [columns setObject: @"BLOB" forKey: name];
-                    } else if ([type isEqualToString: @"NSDate"]) {
-                        [columns setObject: @"INTEGER" forKey: name];
+                    NSDictionary *typeMap = [NSDictionary dictionaryWithObjectsAndKeys: 
+                                             @"INTEGER", @"i",
+                                             @"INTEGER", @"I",
+                                             @"FLOAT", @"f",
+                                             @"INTEGER", @"l",
+                                             @"INTEGER", @"s",
+                                             @"INTEGER", @"c",
+                                             @"INTEGER", @"NSNumber",
+                                             @"TEXT", @"NSString",
+                                             @"BLOB", @"NSData",
+                                             @"INTEGER", @"NSDate",
+                                             nil];
+                    
+                    NSString *column;
+                    if ((column = [typeMap objectForKey: type])) {
+                        if (unique) {
+                            column = [column stringByAppendingString: @" UNIQUE"];
+                        }
+                        
+                        [columns setObject: column forKey: name];
+                        
                     } else {
                         // Ignore unknown
                         NSLog(@"Ignoring column %@ of type %@", name, type);
@@ -121,14 +126,53 @@
                 }
                 j++;
             }
+            [columns release];
             query = [query stringByAppendingString: @")"];
+            
             NSLog(@"%@", query);
             [db query: query withError: &error];
             if (error) {
                 NSLog(@"Failed to create table %@: %@", table_name, error);
+            } else {
+                
+                // Retrieve indexes
+                NSArray *indexesTuples = [class indexes];
+                m = [indexesTuples count];
+                for (j = 0; j < m; j++) {
+                    if ([[indexesTuples objectAtIndex: j] isKindOfClass: [NSString class]]) {
+                        NSString *name = [indexesTuples objectAtIndex: j];
+                        NSString *indexName = [name stringByAppendingString: @"Index"];
+                        NSString *indexQuery = [NSString stringWithFormat: @"CREATE INDEX IF NOT EXISTS %@ ON %@ (%@)", indexName, table_name, name];
+                        NSLog(@"%@", indexQuery);
+                        
+                        [db query: indexQuery withError: &error];
+                        if (error) {
+                            NSLog(@"Failed to create index %@: %@", indexName, error);
+                        }
+                        
+                    } else if ([[indexesTuples objectAtIndex: j] isKindOfClass: [NSArray class]]) {
+                        // Indexing multiple columns
+                        NSArray *tuples = [indexesTuples objectAtIndex: j];
+                        NSString *indexName = [[tuples componentsJoinedByString: @""] stringByAppendingString: @"Index"];
+                        NSString *name = [tuples componentsJoinedByString: @","];
+                        
+                        NSString *indexQuery = [NSString stringWithFormat: @"CREATE INDEX IF NOT EXISTS %@ ON %@ (%@)", indexName, table_name, name];
+                        NSLog(@"%@", indexQuery);
+                        
+                        [db query: indexQuery withError: &error];
+                        if (error) {
+                            NSLog(@"Failed to create index %@: %@", indexName, error);
+                        }
+                        
+                    }
+                }
+                
             }
+            
         }
     }
+    
+    [tables release];
 
     return db;
 }
