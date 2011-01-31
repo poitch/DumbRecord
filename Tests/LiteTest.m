@@ -18,6 +18,15 @@ int main (int argc, const char * argv[]) {
         [fm removeItemAtPath: @"TestLite.sql" error: nil];
     }
     
+    NSLog(@"%s", @encode(long long));
+    NSLog(@"%s", @encode(unsigned long long));
+
+    NSLog(@"%s", @encode(long));
+    NSLog(@"%s", @encode(int));
+    NSLog(@"%s", @encode(unsigned int));
+
+    NSLog(@"%s", @encode(double));
+    
     [DRLite setVerbose: YES];
     
     DRLite *db = [[DRLite alloc] initWithDatabase: @"TestLite.sql"];

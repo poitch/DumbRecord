@@ -30,7 +30,7 @@
 + (DRLite *) liteWithDatabase: (NSString *) database;
 - (id) initWithDatabase: (NSString *) database;
 
-- (BOOL) insert: (NSString *) query withArguments: (NSArray *) args andError: (NSError **) error;
+- (NSArray *) query: (NSString *) query withArguments: (NSArray *) args andError: (NSError **) error;
 - (NSArray *)query: (NSString *)query withError: (NSError **)error;
 - (NSNumber *)lastId; 
 
