@@ -144,16 +144,23 @@ static BOOL __drlite_verbose = false;
                         }
                         return results;
                     }                        
-                } else if ([[arg className] isEqualToString: @"NSCFData"]) {
+                } else if ([[arg className] isEqualToString: @"NSCFData"] || [[arg className] isEqualToString: @"NSConcreteData"]) {
                     if (SQLITE_OK != sqlite3_bind_blob(stmt, i, [arg bytes], [arg length], NULL)) {
                         if (error) {
                             *error = generate_error(208, [NSString stringWithFormat: @"Could not bind NSData argument %d", i]);
                         }
                         return results;
-                    }                        
+                    }   
+                } else if ([[arg className] isEqualToString: @"NSNull"]) {
+                    if (SQLITE_OK != sqlite3_bind_null(stmt, i)) {
+                        if (error) {
+                            *error = generate_error(209, [NSString stringWithFormat: @"Could not bind NSData argument %d", i]);
+                        }
+                        return results;
+                    }
                 } else {
                     if (error) {
-                        *error = generate_error(209, [NSString stringWithFormat: @"Could not bind %@ argument %d (value: %@)", [arg className], i, arg]);
+                        *error = generate_error(210, [NSString stringWithFormat: @"Could not bind %@ argument %d (value: %@)", [arg className], i, arg]);
                     }
                     return results;
                 }
@@ -221,7 +228,7 @@ static BOOL __drlite_verbose = false;
 				*error = generate_error(sqlite3_errcode(_database), [NSString stringWithCString: sqlite3_errmsg(_database) encoding: NSUTF8StringEncoding]);            
 
 			}
-            return results;
+            return [results autorelease];
         }
             
 
